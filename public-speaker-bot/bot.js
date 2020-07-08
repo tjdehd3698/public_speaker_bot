@@ -9,7 +9,6 @@ class MyBot extends ActivityHandler {
         super();
         // See https://aka.ms/about-bot-activity-message to learn more about the message and other activity types.
         this.onMessage(async (context, next) => {
-            console.log(context.activity.text);
             const text=context.activity.text;
             if (text == "목적 알려주세요") {
                 await context.sendActivity(`현대인들의 저조한 독서율을 올리기 위해 도서 추천을 해줍니다.`);
