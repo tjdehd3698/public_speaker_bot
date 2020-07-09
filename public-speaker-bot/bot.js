@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 
-const { ActivityHandler } = require('botbuilder');
+const { ActivityHandler, MessageFactory } = require('botbuilder');
 
 class MyBot extends ActivityHandler {
     constructor() {
@@ -21,10 +21,15 @@ class MyBot extends ActivityHandler {
             }
         });
         this.onConversationUpdate(async (context, next) => {
-            await context.sendActivity('[conversationUpdate event detected]');
+            await context.sendActivity('Welcome');
+            await this.sendSuggestedActions(context);
             // By calling next() you ensure that the next BotHandler is run.
             await next();
         });
+    }
+    async sendSuggestedActions(turnContext) {
+        var reply = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작'], '무엇을 보고싶나요?');
+        await turnContext.sendActivity(reply);
     }
 }
 
