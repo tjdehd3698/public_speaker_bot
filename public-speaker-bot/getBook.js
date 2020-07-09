@@ -22,4 +22,28 @@ getHTML()
     });
     return liList;
   })
-  .then(res => console.log(res)); // 저장된 결과를 출력
+    .then(res => console.log(res)); // 저장된 결과를 출력
+
+
+async function getNEWHTML() {
+    try {
+        return await axios.get("http://www.kyobobook.co.kr/newproduct/newProductList.laf?mallGb=KOR");
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+getNEWHTML()
+    .then(html => {
+        let liList = [];
+        const $ = cheerio.load(html.data);
+        const bodyList = $("div.title");
+
+        bodyList.each(function (i, elem) {
+            liList[i] = {
+                title: $(this).find('a').text()
+            };
+        });
+        return liList;
+    })
+    .then(res => console.log(res)); // 저장된 결과를 출력
