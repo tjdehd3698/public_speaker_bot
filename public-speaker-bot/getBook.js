@@ -1,7 +1,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-async function getHTML() {
+async function getBestSellerHTML() {
   try {
     return await axios.get("https://search.naver.com/search.naver?sm=top_hty&fbm=1&ie=utf8&query=%EB%B2%A0%EC%8A%A4%ED%8A%B8%EC%85%80%EB%9F%AC");
   } catch (error) {
@@ -9,41 +9,36 @@ async function getHTML() {
   }
 }
 
-getHTML()
-  .then(html => {
-    let liList = [];
-    const $ = cheerio.load(html.data);
-    const bodyList = $("div.cs_bestseller").children("ol.thumb_list").children("li");
-    
-    bodyList.each(function(i, elem){
-        liList[i]={
-            title: $(this).find('dt').text()
-        };
-    });
-    return liList;
-  })
-    .then(res => console.log(res)); // 저장된 결과를 출력
-
-
-async function getNEWHTML() {
-    try {
-        return await axios.get("https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=%EC%8B%A0%EC%9E%91%EB%8F%84%EC%84%9C&oquery=%EB%B2%A0%EC%8A%A4%ED%8A%B8%EC%85%80%EB%9F%AC+%EA%B5%90%EB%B3%B4%EB%AC%B8%EA%B3%A0&tqi=UwQW5dp0YidssgRdMFZssssss%2Bw-295748");
-    } catch (error) {
-        console.error(error);
-    }
+async function getNewBooksHTML() {
+  try {
+    return await axios.get("http://www.kyobobook.co.kr/newproduct/newProductList.laf?mallGb=KOR");
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-getNEWHTML()
-    .then(html => {
-        let liList = [];
-        const $ = cheerio.load(html.data);
-        const bodyList = $("div.tit");
+getBestSellerHTML().then(html => {
+  let liList = [];
+  const $ = cheerio.load(html.data);
+  const bodyList = $("div.cs_bestseller").children("ol.thumb_list").children("li");
 
-        bodyList.each(function (i, elem) {
-            liList[i] = {
-                title: $(this).find('a').text()
-            };
-        });
-        return liList;
-    })
-    .then(res => console.log(res)); // 저장된 결과를 출력
+  bodyList.each(function (i, elem) {
+    liList[i] = {
+      title: $(this).find('dt').text()
+    };
+  });
+  return liList;
+}).then(res => module.exports.bestSeller = res)
+
+getNewBooksHTML().then(html => {
+  let liList = [];
+  const $ = cheerio.load(html.data);
+  const bodyList = $("div.detail").children('div.title');
+
+  bodyList.each(function (i, elem) {
+    liList[i] = {
+      title: $(this).find('a').text()
+    };
+  });
+  return liList;
+}).then(res => module.exports.newBooks = res)
