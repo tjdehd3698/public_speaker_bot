@@ -27,7 +27,7 @@ getHTML()
 
 async function getNEWHTML() {
     try {
-        return await axios.get("http://www.kyobobook.co.kr/newproduct/newProductList.laf?mallGb=KOR");
+        return await axios.get("https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=%EC%8B%A0%EC%9E%91%EB%8F%84%EC%84%9C&oquery=%EB%B2%A0%EC%8A%A4%ED%8A%B8%EC%85%80%EB%9F%AC+%EA%B5%90%EB%B3%B4%EB%AC%B8%EA%B3%A0&tqi=UwQW5dp0YidssgRdMFZssssss%2Bw-295748");
     } catch (error) {
         console.error(error);
     }
@@ -37,7 +37,7 @@ getNEWHTML()
     .then(html => {
         let liList = [];
         const $ = cheerio.load(html.data);
-        const bodyList = $("div.title");
+        const bodyList = $("div.tit");
 
         bodyList.each(function (i, elem) {
             liList[i] = {
