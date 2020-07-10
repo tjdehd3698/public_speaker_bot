@@ -11,7 +11,7 @@ async function getBestSellerHTML() {
 
 async function getNewBooksHTML() {
   try {
-    return await axios.get("http://www.kyobobook.co.kr/newproduct/newProductList.laf?mallGb=KOR");
+      return await axios.get("https://search.shopping.naver.com/search/all?query=%EC%8B%A0%EC%9E%91%EB%8F%84%EC%84%9C&frm=NVSCPRO&bt=0");
   } catch (error) {
     console.error(error);
   }
@@ -33,7 +33,7 @@ getBestSellerHTML().then(html => {
 getNewBooksHTML().then(html => {
   let liList = [];
   const $ = cheerio.load(html.data);
-  const bodyList = $("div.detail").children('div.title');
+  const bodyList = $(".basicList_title__3P9Q7");
 
   bodyList.each(function (i, elem) {
     liList[i] = {

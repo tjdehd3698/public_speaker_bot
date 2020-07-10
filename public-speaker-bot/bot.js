@@ -25,7 +25,7 @@ class MyBot extends ActivityHandler {
                 var replyText=``;
                 for(var i in bestSeller){
                     console.log(bestSeller[i].title);
-                    replyText += `${Number(i)+1}위 : ${bestSeller[i].title}\n`
+                    replyText += `${Number(i)+1}위 : ${bestSeller[i].title}\n\n`
                 }
                 console.log(replyText);
                 await context.sendActivity(replyText);
@@ -37,7 +37,7 @@ class MyBot extends ActivityHandler {
                 var replyText=``;
                 for(var i in newBooks){
                     console.log(newBooks[i].title);
-                    replyText += `${newBooks[i].title}\n`
+                    replyText += `-${newBooks[i].title}\n\n`
                 }
                 console.log(replyText);
                 await context.sendActivity(replyText);
