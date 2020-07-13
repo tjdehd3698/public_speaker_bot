@@ -23,8 +23,9 @@ getBestSellerHTML().then(html => {
   const bodyList = $("div.cs_bestseller").children("ol.thumb_list").children("li");
 
   bodyList.each(function (i, elem) {
-    liList[i] = {
-      title: $(this).find('dt').text()
+      liList[i] = {
+        title: $(this).find('dt').text(),
+        uri: $(this).find('a').attr('href')
     };
   });
   return liList;
