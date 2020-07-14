@@ -28,8 +28,8 @@ getBookBarcodeHTML().then(html => { //바코드 가져오기
     var bookBarcode = $(bodyList[0]).val();
     return bookBarcode;
 }).then(bookBarcode => {    //가져온 바코드로 책 정보 검색
-    var brance = '05';    //지점코드 하드코딩 -> 나중에 수정
-    var getLocationUrl = 'http://mkiosk.kyobobook.co.kr/kiosk/product/bookInfoInk.ink?site=' + brance + '&ejkGb=KOR&barcode=' + bookBarcode + '&map=Y&orderClick=JFH';
+    var branch = '05';    //지점코드 하드코딩 -> 나중에 수정
+    var getLocationUrl = 'http://mkiosk.kyobobook.co.kr/kiosk/product/bookInfoInk.ink?site=' + branch + '&ejkGb=KOR&barcode=' + bookBarcode + '&map=Y&orderClick=JFH';
     return getBookInformationHTML(getLocationUrl);
 }).then(html => {   //책 정보(재고, 위치, 위치이미지) 가져오기
     const $ = cheerio.load(html.data);
