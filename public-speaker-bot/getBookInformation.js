@@ -1,43 +1,52 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
+const iconv = require("iconv-lite");
 
-var bookName = '수제비정보처리기사';    //책제목 하드코딩 -> 나중에 수정
-var getBarcodeUrl = 'https://search.kyobobook.co.kr/web/search?vPstrKeyWord=' + encodeURI(bookName) + '&orderClick=LET';
+var userBookName = '수제비정보처리기사';    //책제목 하드코딩 -> 나중에 수정
+var userBranch = '부산점';  //사용자가 원하는 지점이름 하드코딩 -> 나중에 수정
+
+var getBarcodeUrl = 'https://search.kyobobook.co.kr/web/search?vPstrKeyWord=' + encodeURI(userBookName) + '&orderClick=LET';
+var getBranchCodeUrl = 'http://www.kyobobook.co.kr/storen/info/StorePosition.jsp';
 
 async function getHTML(url) {
     try {
-        return await axios.get(url);
+        return await axios({
+            url,
+            method: "GET",
+            responseType: "arraybuffer"
+        });
     } catch (error) {
         console.error(error);
     }
 }
 
-getHTML(getBarcodeUrl).then(html => {
+var userData = {};  //사용자가 찾는 책의 바코드와 원하는 지점의 코드가 들어가는 객체
+getHTML(getBarcodeUrl).then(html => {   //책 바코드 가져오기
     const $ = cheerio.load(html.data);
     const bodyList = $("tbody#search_list").children("input");
-    var bookBarcode = $(bodyList[0]).val(); //책 바코드 가져오기
-    console.log('책 바코드 : '+bookBarcode);
-    var getBranchCodeUrl = 'http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=' + bookBarcode + '&orderClick=LET&Kc=';
+    var userBookBarcode = $(bodyList[0]).val();
+    console.log('책 바코드 : ' + userBookBarcode);
+    userData['userBookBarcode'] = userBookBarcode;
     return getHTML(getBranchCodeUrl);
-}).then(html => {
-    // 지점코드 가져오는 부분
-    /*
-    const $ = cheerio.load(html.data);
-    const table = $('#storeStockTable > table');
-    const tr_list = $(table).children("tbody").children("tr");
-    for (var row = 0; row < tr_list.length; row++) {
-        var cells = tr_list.eq(row).children();
-        var cols = [];
+}).then(html => {   //지점 이름과 코드 정보 가져오기
+    const h = iconv.decode(html.data, "EUC-KR").toString();
+    const $ = cheerio.load(h);
+    const trList = $('div#store_content tbody').children('tr');
+    var branchOffices = {};   //지점 이름과 코드 매칭시켜놓은 객체
+    for (var row = 0; row < trList.length; row++) {
+        var cells = trList.eq(row).children();
         for (var col = 0; col < cells.length; col++) {
-            var value = cells.eq(col).text();
-            cols.push(value);
-            console.log(value);
+            var branchName = cells.eq(col).text();
+            var branchCode = cells.eq(col).find('a').attr('data-code');
+            branchOffices[branchName] = branchCode;
         }
     }
-    */
-    return branchCode;
-}).then(branchCode => {
-    var getLocationUrl = 'http://mkiosk.kyobobook.co.kr/kiosk/product/bookInfoInk.ink?site=' + branchCode + '&ejkGb=KOR&barcode=' + bookBarcode + '&map=Y&orderClick=JFH';
+    userBranchCode = branchOffices[userBranch];
+    console.log('지점 코드 : ' + userBranchCode);
+    userData['userBranchCode'] = userBranchCode;
+    return userData;
+}).then(userData => {
+    var getLocationUrl = 'http://mkiosk.kyobobook.co.kr/kiosk/product/bookInfoInk.ink?site=' + userData.userBranchCode + '&ejkGb=KOR&barcode=' + userData.userBookBarcode + '&map=Y&orderClick=JFH';
     return getHTML(getLocationUrl);
 }).then(html => {   //책 정보(재고, 위치, 위치이미지) 가져오기
     const $ = cheerio.load(html.data);
