@@ -6,6 +6,7 @@ const { ActivityHandler, MessageFactory } = require('botbuilder');
 const book = require('./getBook')
 const branch = require('./getBranchCode')
 const predict = require('./predict_2')
+const information=require('./getBookInformation')
 
 class MyBot extends ActivityHandler {
     constructor() {
@@ -15,10 +16,6 @@ class MyBot extends ActivityHandler {
             const text = context.activity.text;
             if (text == "목적 알려주세요" || text == "목적알려주세요") {
                 await context.sendActivity(`현대인들의 저조한 독서율을 올리기 위해 도서 추천을 해줍니다.`);
-                await next();
-            }
-            else if (text == "도서추천" || text == "도서 추천") {
-                await this.sendSuggestedActions(context);
                 await next();
             }
             else if (text == '베스트셀러') {
@@ -31,6 +28,7 @@ class MyBot extends ActivityHandler {
                 }
                 console.log(replyText);
                 await context.sendActivity(replyText);
+                await this.sendSuggestedActions(context);
                 await next();
             }
             else if (text == '화제의 신작') {
@@ -43,14 +41,15 @@ class MyBot extends ActivityHandler {
                 }
                 console.log(replyText);
                 await context.sendActivity(replyText);
+                await this.sendSuggestedActions(context);
                 await next();
             }
             else if (text == '교보문고 지점목록') {
-                const branchName=Object.keys(branch.branchList);
+                const branchName = Object.keys(branch.branchList);
                 console.log(branchName);
-                var  replyText=``;
+                var replyText = ``;
                 for (var i in branchName) {
-                    if (i == 0||i==16||i==29) {
+                    if (i == 0 || i == 16 || i == 29) {
                         replyText += `\n\n${branchName[i]}\n/`
                     }
                     else {
@@ -58,33 +57,35 @@ class MyBot extends ActivityHandler {
                     }
                 }
                 await context.sendActivity(replyText);
+                await this.sendSuggestedActions(context);
+                await next();
+            }
+            else if (text == '종료') {
+                await context.sendActivity(`감사합니다~^^`);
             }
             else {
                 var replyText;
-                predict.getPrediction(text).then(res=> {
-                    var predictObj=res;
+                predict.getPrediction(text).then(res => {
+                    var predictObj = res;
                     var score = predictObj.score;
                     var bookName = predictObj.bookName;
                     var branch = predictObj.branch;
-                    var text = `점수 : `+score + '/ 책이름 : '+bookName + '/ 지점 : '+branch;
-                    replyText=text;
-                    setTimeout(()=>{
-                        context.sendActivity(replyText);
-                        next();
-                    },5000);
+                    information.getBookLocation(bookName, branch);
                 });
+                await next();
             }
         });
         this.onConversationUpdate(async (context, next) => {
             await context.sendActivity('어서오세요');
-            await context.sendActivity('"목적 알려주세요" 또는 "도서추천"을 입력해주세요');
+            await context.sendActivity('목적을 알고 싶으면 "목적 알려주세요"를 입력해주세요');
+            await this.sendSuggestedActions(context);
             // By calling next() you ensure that the next BotHandler is run.
             await next();
         });
     }
 
     async sendSuggestedActions(turnContext) {
-        var reply = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작', '교보문고 지점목록', '나가기'], '무엇을 보고싶나요?');
+        var reply = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작', '교보문고 지점목록', '종료'], '무엇을 보고싶나요?');
         await turnContext.sendActivity(reply);
     }
 }
