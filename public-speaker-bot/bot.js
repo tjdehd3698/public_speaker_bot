@@ -4,6 +4,7 @@
 const { ActivityHandler, MessageFactory } = require('botbuilder');
 
 const book = require('./getBook')
+const branch = require('./getBranchCode')
 
 class MyBot extends ActivityHandler {
     constructor() {
@@ -43,6 +44,16 @@ class MyBot extends ActivityHandler {
                 await context.sendActivity(replyText);
                 await next();
             }
+            else if(text=='교보문고 지점목록'){
+                const branchName=Object.keys(branch.branchList);
+                console.log(branchName);
+                var  replyText=``;
+                for(var i in branchName){
+                    replyText += `${branchName[i]}\n\n`
+                }
+                await context.sendActivity(replyText);
+                await next();
+            }
             else {
                 await context.sendActivity(`You said '${context.activity.text}'`);
                 // By calling next() you ensure that the next BotHandler is run.
@@ -57,7 +68,7 @@ class MyBot extends ActivityHandler {
         });
     }
     async sendSuggestedActions(turnContext) {
-            var reply = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작', '나가기'], '무엇을 보고싶나요?');
+            var reply = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작', '교보문고 지점목록', '나가기'], '무엇을 보고싶나요?');
             await turnContext.sendActivity(reply);
     }
 }
