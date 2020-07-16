@@ -4,8 +4,6 @@
 var requestPromise = require('request-promise');
 var queryString = require('querystring');
 
-
-
 // Analyze a string utterance.
 getPrediction = async () => {
     //const fs = require('fs')
@@ -25,7 +23,7 @@ getPrediction = async () => {
 
     // The utterance you want to use.
     //response.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
-    const utterance =iconv.decode ("Æ÷Ç×°ø´ëÁ¡¿¡ ¸»¼¾½º ¾îµğ ÀÖ¾î?").toString();
+    var utterance = "í¬í•­ê³µëŒ€ì ì— ë§ì„¼ìŠ¤ ì–´ë”” ìˆì–´?";
     //////////
 
     // Create query string
