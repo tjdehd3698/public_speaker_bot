@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-//const { ActivityHandler, MessageFactory } = require('botbuilder');
-const { ActivityHandler, ActionTypes, ActivityTypes, CardFactory, MessageFactory } = require('botbuilder');
+const { ActivityHandler, MessageFactory } = require('botbuilder');
+//const { ActivityHandler, ActionTypes, ActivityTypes, CardFactory, MessageFactory } = require('botbuilder');
 const book = require('./getBook')
 const branch = require('./getBranchCode')
 
@@ -45,18 +45,18 @@ class MyBot extends ActivityHandler {
                 await next();
             }
             else if (text == '교보문고 지점목록') {
-                const reply = { type: ActivityTypes.Message };
-                //const branchName=Object.keys(branch.branchList);
-                //console.log(branchName);
-                //var  replyText=``;
-                //for(var i in branchName){
-                //    replyText += `${branchName[i]}\n\n`
-                //}
-                //await context.sendActivity(replyText);
-                reply.attachments = [this.getInlineAttachment()];
-                //reply.attachments = [await this.getUploadedAttachment(turnContext)];
-                await context.sendActivity(reply);
-                await next();
+                const branchName=Object.keys(branch.branchList);
+                console.log(branchName);
+                var  replyText=``;
+                for (var i in branchName) {
+                    if (i == 0||i==16||i==29) {
+                        replyText += `\n\n${branchName[i]}\n/`
+                    }
+                    else {
+                        replyText += `${branchName[i]}\n,`
+                    }
+                }
+                await context.sendActivity(replyText);
             }
             else {
                 await context.sendActivity(`You said '${context.activity.text}'`);
@@ -75,35 +75,6 @@ class MyBot extends ActivityHandler {
     async sendSuggestedActions(turnContext) {
         var reply = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작', '교보문고 지점목록', '나가기'], '무엇을 보고싶나요?');
         await turnContext.sendActivity(reply);
-    }
-    getInlineAttachment() {
-        const imageData = fs.readFileSync(path.join(__dirname, 'C:/Users/성동꾸리/Documents/GitHub/public_speaker_bot/public-speaker-bot/Storelist.png'));
-        const base64Image = Buffer.from(imageData).toString('base64');
-
-        return {
-            name: 'Storelist.png',
-            contentType: 'image/png',
-            contentUrl: `data:image/png;base64,${base64Image}`
-        };
-    }
-    async getUploadedAttachment(turnContext) {
-        const imageData = fs.readFileSync(path.join(__dirname, 'C:/Users/성동꾸리/Documents/GitHub/public_speaker_bot/public-speaker-bot/Storelist.png'));
-        const connector = turnContext.adapter.createConnectorClient(turnContext.activity.serviceUrl);
-        const conversationId = turnContext.activity.conversation.id;
-        const response = await connector.conversations.uploadAttachment(conversationId, {
-            name: 'Storelist.png',
-            originalBase64: imageData,
-            type: 'image/png'
-        });
-
-        // Retrieve baseUri from ConnectorClient for... something.
-        const baseUri = connector.baseUri;
-        const attachmentUri = baseUri + (baseUri.endsWith('/') ? '' : '/') + `v3/attachments/${encodeURI(response.id)}/views/original`;
-        return {
-            name: 'Storelist.png',
-            contentType: 'image/png',
-            contentUrl: attachmentUri
-        };
     }
 }
 
