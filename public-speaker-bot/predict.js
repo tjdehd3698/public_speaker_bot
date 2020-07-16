@@ -25,15 +25,17 @@ getPrediction = async () => {
     const LUIS_endpoint = "https://mybook-luis.cognitiveservices.azure.com/";
     //const utterance = " "
 
-    //var utterance = "포항공대점에 말센스 어디 있어?";
+    var utterance = "포항공대점에 말센스 어디 있어?";
 
     const dataBuffer = fs.readFileSync('query-json.json')
     const dataJson = dataBuffer.toString()
 
     const data = JSON.parse(dataJson)
     console.log('쿼리: ' + data.query)
-    console.log('지점: ' + data.$instance);
-    const utterance = data.query;
+    console.log('적합성: ' + data.prediction.intents.위치.score)
+    console.log('책이름: ' + data.prediction.entities.책[1].이름);
+    console.log('지점: ' + data.prediction.entities.책[0].지점);
+    //const utterance = data.query;
     
 
     // Create query string
