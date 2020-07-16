@@ -5,6 +5,7 @@ const { ActivityHandler, MessageFactory } = require('botbuilder');
 //const { ActivityHandler, ActionTypes, ActivityTypes, CardFactory, MessageFactory } = require('botbuilder');
 const book = require('./getBook')
 const branch = require('./getBranchCode')
+const predict = require('./predict_2')
 
 class MyBot extends ActivityHandler {
     constructor() {
@@ -59,9 +60,19 @@ class MyBot extends ActivityHandler {
                 await context.sendActivity(replyText);
             }
             else {
-                await context.sendActivity(`You said '${context.activity.text}'`);
-                // By calling next() you ensure that the next BotHandler is run.
-                await next();
+                var replyText;
+                predict.getPrediction(text).then(res=> {
+                    var predictObj=res;
+                    var score = predictObj.score;
+                    var bookName = predictObj.bookName;
+                    var branch = predictObj.branch;
+                    var text = `점수 : `+score + '/ 책이름 : '+bookName + '/ 지점 : '+branch;
+                    replyText=text;
+                    setTimeout(()=>{
+                        context.sendActivity(replyText);
+                        next();
+                    },5000);
+                });
             }
         });
         this.onConversationUpdate(async (context, next) => {
