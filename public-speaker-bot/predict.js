@@ -4,6 +4,9 @@
 var requestPromise = require('request-promise');
 var queryString = require('querystring');
 
+const fs = require('fs');
+//const Json = require('query-json.json');
+
 // Analyze a string utterance.
 getPrediction = async () => {
     //const fs = require('fs')
@@ -20,11 +23,18 @@ getPrediction = async () => {
     // YOUR-PREDICTION-ENDPOINT: Replace this with your authoring key endpoint.
     // For example, "https://westus.api.cognitive.microsoft.com/"
     const LUIS_endpoint = "https://mybook-luis.cognitiveservices.azure.com/";
+    //const utterance = " "
 
-    // The utterance you want to use.
-    //response.writeHead(200, { 'Content-Type': 'text/html;charset=UTF-8' });
-    var utterance = "포항공대점에 말센스 어디 있어?";
-    //////////
+    //var utterance = "포항공대점에 말센스 어디 있어?";
+
+    const dataBuffer = fs.readFileSync('query-json.json')
+    const dataJson = dataBuffer.toString()
+
+    const data = JSON.parse(dataJson)
+    console.log('쿼리: ' + data.query)
+    console.log('지점: ' + data.$instance);
+    const utterance = data.query;
+    
 
     // Create query string
     const queryParams = {
@@ -40,10 +50,12 @@ getPrediction = async () => {
     // Send the REST call.
     const response = await requestPromise(URI);
 
-   // fs.writeFileSync('bookInformation.jason',response)
-    // Display the response from the REST call.
+    const bookJson = JSON.stringify(response);
+
+
     console.log(response);
 }
 
 // Pass an utterance to the sample LUIS app
 getPrediction().then(() => console.log("done")).catch((err) => console.log(err));
+//exports.getPrediction = this.getPrediction;
