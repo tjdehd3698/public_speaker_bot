@@ -5,7 +5,7 @@ const { ActivityHandler, MessageFactory } = require('botbuilder');
 //const { ActivityHandler, ActionTypes, ActivityTypes, CardFactory, MessageFactory } = require('botbuilder');
 const book = require('./getBook')
 const branch = require('./getBranchCode')
-const predict = require('./predict_2')
+const predict = require('./predict')
 const information=require('./getBookInformation')
 
 class MyBot extends ActivityHandler {
