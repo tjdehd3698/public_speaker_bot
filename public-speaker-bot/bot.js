@@ -1,12 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { ActivityHandler, MessageFactory } = require('botbuilder');
+const { ActivityHandler, MessageFactory, TurnContext } = require('botbuilder');
 //const { ActivityHandler, ActionTypes, ActivityTypes, CardFactory, MessageFactory } = require('botbuilder');
 const book = require('./getBook')
 const branch = require('./getBranchCode')
 const predict = require('./predict')
-const information=require('./getBookInformation')
+const information = require('./getBookInformation')
+const cron = require('node-cron');
 
 class MyBot extends ActivityHandler {
     constructor() {
@@ -66,24 +67,28 @@ class MyBot extends ActivityHandler {
             else {
                 var replyText;
                 var infoObj;
+                var conversationReferences = {};
+                var adapter;
+                const currentUser = context.activity.from.id;
+                conversationReferences[currentUser] = TurnContext.getConversationReference(context.activity);
+                adapter = context.adapter;
                 predict.getPrediction(text).then(res => {
                     var predictObj = res;
                     var score = predictObj.score;
                     var bookName = predictObj.bookName;
                     var branch = predictObj.branch;
                     information.getBookLocation(bookName, branch);
-                    setTimeout(function(){
-                        infoObj=information.bookInformation;
-                        replyText=infoObj.stock+`\n위치 : `+infoObj.location;
+                    setTimeout(function () {
+                        infoObj = information.bookInformation;
+                        replyText = infoObj.stock + `\n위치 : ` + infoObj.location;
                         console.log(replyText);
-                        for (const conversationReference of Object.values(conversationReferences)) {
-                            await adapter.continueConversation(conversationReference, async turnContext => {
-                                // If you encounter permission-related errors when sending this message, see
-                                // https://aka.ms/BotTrustServiceUrl
-                                await turnContext.sendActivity('proactive hello');
+
+                        cron.schedule('* * * * * *', async function () {
+                            await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
+                                await turnContext.sendActivity(replyText);
                             });
-                        }
-                    },1500);
+                        });
+                    }, 1500);
                 });
                 await next();
             }
