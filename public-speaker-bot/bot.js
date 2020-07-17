@@ -65,33 +65,42 @@ class MyBot extends ActivityHandler {
                 await context.sendActivity(`감사합니다~^^`);
             }
             else {
-                var replyText;
-                var infoObj;
-                var conversationReferences = {};
-                var adapter;
-                const currentUser = context.activity.from.id;
-                conversationReferences[currentUser] = TurnContext.getConversationReference(context.activity);
-                adapter = context.adapter;
-                predict.getPrediction(text).then(res => {
-                    var predictObj = res;
-                    var score = predictObj.score;
-                    var bookName = predictObj.bookName;
-                    var branch = predictObj.branch;
-                    information.getBookLocation(bookName, branch);
-                    setTimeout(function () {
-                        infoObj = information.bookInformation;
-                        replyText = infoObj.stock + `\n\n위치 : ` + infoObj.location;
-                        console.log(replyText);
+                try {
+                    var replyText;
+                    var infoObj;
+                    var conversationReferences = {};
+                    var adapter;
+                    var error;
+                    const currentUser = context.activity.from.id;
+                    conversationReferences[currentUser] = TurnContext.getConversationReference(context.activity);
+                    adapter = context.adapter;
+                    predict.getPrediction(text).then(res => {
+                        var predictObj = res;
+                        var score = predictObj.score;
+                        var bookName = predictObj.bookName;
+                        var branch = predictObj.branch;
+                        information.getBookLocation(bookName, branch);
+                        setTimeout(function () {
+                            infoObj = information.bookInformation;
+                            replyText = infoObj.stock + `\n\n위치 : ` + infoObj.location;
+                            console.log(replyText);
 
-                        setTimeout(async ()=>{
-                            await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
-                                await turnContext.sendActivity(replyText);
-                                await next();
-                            });
-                        },500);
-                        
-                    }, 1600);
-                });
+                            setTimeout(async () => {
+                                await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
+                                    await turnContext.sendActivity(replyText);
+                                    await next();
+                                });
+                            }, 500);
+
+                        }, 1600);
+                    });
+                    throw ("잘못된 문장입니다. 다시입력해주세요");
+                }
+                catch (err) {
+                    error = err;
+                    await context.sendActivity(error);
+                    await next();
+                }
             }
         });
         this.onConversationUpdate(async (context, next) => {
