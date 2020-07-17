@@ -26,7 +26,7 @@ module.exports.getBookLocation = async (name, branch) => {
         const $ = cheerio.load(html.data);
         const bodyList = $("tbody#search_list").children("input");
         var userBookBarcode = $(bodyList[0]).val();
-        console.log('책 바코드 : ' + userBookBarcode);
+        //console.log('책 바코드 : ' + userBookBarcode);
         userData['userBookBarcode'] = userBookBarcode;
         return getHTML(getBranchCodeUrl);
     }).then(html => {   //지점 이름과 코드 정보 가져오기
@@ -43,7 +43,7 @@ module.exports.getBookLocation = async (name, branch) => {
             }
         }
         userBranchCode = branchOffices[userBranch];
-        console.log('지점 코드 : ' + userBranchCode);
+        //console.log('지점 코드 : ' + userBranchCode);
         userData['userBranchCode'] = userBranchCode;
         return userData;
     }).then(userData => {
@@ -64,7 +64,7 @@ module.exports.getBookLocation = async (name, branch) => {
             location: bookLocation,
             locationImg: bookLocationImg
         }
-        console.log(bookInformation);
+        //console.log(bookInformation);
         return bookInformation;
     }).then(res => module.exports.bookInformation = res)
 }
