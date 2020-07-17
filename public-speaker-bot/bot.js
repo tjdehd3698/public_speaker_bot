@@ -65,12 +65,25 @@ class MyBot extends ActivityHandler {
             }
             else {
                 var replyText;
+                var infoObj;
                 predict.getPrediction(text).then(res => {
                     var predictObj = res;
                     var score = predictObj.score;
                     var bookName = predictObj.bookName;
                     var branch = predictObj.branch;
                     information.getBookLocation(bookName, branch);
+                    setTimeout(function(){
+                        infoObj=information.bookInformation;
+                        replyText=infoObj.stock+`\n위치 : `+infoObj.location;
+                        console.log(replyText);
+                        for (const conversationReference of Object.values(conversationReferences)) {
+                            await adapter.continueConversation(conversationReference, async turnContext => {
+                                // If you encounter permission-related errors when sending this message, see
+                                // https://aka.ms/BotTrustServiceUrl
+                                await turnContext.sendActivity('proactive hello');
+                            });
+                        }
+                    },1500);
                 });
                 await next();
             }
