@@ -7,7 +7,7 @@ const book = require('./getBook')
 const branch = require('./getBranchCode')
 const predict = require('./predict')
 const information = require('./getBookInformation')
-const cron = require('node-cron');
+//const cron = require('node-cron');
 
 class MyBot extends ActivityHandler {
     constructor() {
@@ -80,17 +80,18 @@ class MyBot extends ActivityHandler {
                     information.getBookLocation(bookName, branch);
                     setTimeout(function () {
                         infoObj = information.bookInformation;
-                        replyText = infoObj.stock + `\n위치 : ` + infoObj.location;
+                        replyText = infoObj.stock + `\n\n위치 : ` + infoObj.location;
                         console.log(replyText);
 
-                        cron.schedule('* * * * * *', async function () {
+                        setTimeout(async ()=>{
                             await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
                                 await turnContext.sendActivity(replyText);
+                                await next();
                             });
-                        });
-                    }, 1500);
+                        },500);
+                        
+                    }, 1600);
                 });
-                await next();
             }
         });
         this.onConversationUpdate(async (context, next) => {
