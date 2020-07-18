@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/45c060b9-d753-467d-9da1-d3b162c331de/resourceGroups/RG_TEAM28/providers/Microsoft.Web/sites/publicspeakerbot",
+    "appService.deploySubpath": "."
+}
