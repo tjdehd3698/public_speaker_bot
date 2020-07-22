@@ -20,6 +20,14 @@ module.exports.getBookLocation = async (name, branch) => {
             console.error(error);
         }
     }
+    function getInternetAttachment(url) {
+        // NOTE: The contentUrl must be HTTPS.
+        return {
+            name: 'architecture-resize.png',
+            contentType: 'image/png',
+            contentUrl: url
+        };
+    }
 
     var userData = {};  //사용자가 찾는 책의 바코드와 원하는 지점의 코드가 들어가는 객체
     getHTML(getBarcodeUrl).then(html => {   //책 바코드 가져오기
@@ -59,10 +67,11 @@ module.exports.getBookLocation = async (name, branch) => {
         }
         bookLocation = bookLocation.first + bookLocation.second.replace(/[\t\n]/g, ''); //위치 가져오기
         const bookLocationImg = $("div.map").find("img").attr('src');   //위치이미지 가져오기
+       // console.log(getInternetAttachment(bookLocationImg));
         const bookInformation = {
             stock: bookStock,
             location: bookLocation,
-            locationImg: bookLocationImg
+            locationImg: getInternetAttachment(bookLocationImg)
         }
         //console.log(bookInformation);
         return bookInformation;

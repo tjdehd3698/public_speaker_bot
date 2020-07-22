@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 const { ActivityHandler, MessageFactory, TurnContext } = require('botbuilder');
+const { ActionTypes, ActivityTypes, CardFactory } = require('botbuilder');
 //const { ActivityHandler, ActionTypes, ActivityTypes, CardFactory, MessageFactory } = require('botbuilder');
 const book = require('./getBook')
 const branch = require('./getBranchCode')
@@ -71,6 +72,8 @@ class MyBot extends ActivityHandler {
                     var conversationReferences = {};
                     var adapter;
                     var error;
+                    const reply = { type: ActivityTypes.Message };
+
                     const currentUser = context.activity.from.id;
                     conversationReferences[currentUser] = TurnContext.getConversationReference(context.activity);
                     adapter = context.adapter;
@@ -83,21 +86,25 @@ class MyBot extends ActivityHandler {
                         setTimeout(function () {
                             infoObj = information.bookInformation;
                             replyText = infoObj.stock + `\n\n위치 : ` + infoObj.location;
-                            console.log(replyText);
+
+                            reply.text = 'This is an inline attachment.';
+                            reply.attachments = [infoObj.locationImg];
 
                             setTimeout(async () => {
                                 await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
                                     await turnContext.sendActivity(replyText);
+                                    await turnContext.sendActivity(reply);
                                     await next();
                                 });
                             }, 500);
 
                         }, 1600);
+
                     });
-                    throw ("잘못된 문장입니다. 다시입력해주세요");
+
                 }
                 catch (err) {
-                    error = err;
+                    error = "잘못된 문장입니다. 다시입력해주세요";
                     await context.sendActivity(error);
                     await next();
                 }
