@@ -43,8 +43,8 @@
 - Compress the files of your own bot.
 - Create new resource groups and resources after joining from Azure homepage.
 - In the cmd window, type 'az login' and log in to Azure.
-- Enter 'az bot prepare-deploy --code-dir "." --lang Javascript to install web.config.
-- Enter "az webapp deployment source config-zip --resource-group "resource group name" --name "resource name created" --src "compressed file path".
+- Enter 'az bot prepare-deploy --code-dir "." --lang Javascript' to install web.config.
+- Enter 'az webapp deployment source config-zip --resource-group "resource group name" --name "resource name created" --src "compressed file path"'.
 - After a few minutes, check if the distribution has been completed by running a test on the web chat from the resource on the Azure homepage to see if it works.
 - https://docs.microsoft.com/ko-kr/azure/bot-service/bot-builder-deploy-az-cli?view=azure-bot-service-4.0&viewFallbackFrom=azure-bot-servi&tabs=javascript
 
