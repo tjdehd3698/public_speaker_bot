@@ -87,13 +87,24 @@ class MyBot extends ActivityHandler {
                             infoObj = information.bookInformation;
                             replyText = infoObj.stock + `\n\n위치 : ` + infoObj.location;
 
-                            reply.text = 'This is an inline attachment.';
                             reply.attachments = [infoObj.locationImg];
 
                             setTimeout(async () => {
                                 await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
-                                    await turnContext.sendActivity(replyText);
-                                    await turnContext.sendActivity(reply);
+                                    if (!infoObj.location)
+                                        await turnContext.sendActivity("지점이 존재하지 않습니다.");
+
+                                    else {
+                                        if (infoObj.stock == '재고 : 없음')
+                                            await turnContext.sendActivity(replyText);
+
+                                        else {
+                                            await turnContext.sendActivity(replyText);
+                                            await turnContext.sendActivity(reply);
+
+                                        }
+
+                                    }
                                     await next();
                                 });
                             }, 500);
