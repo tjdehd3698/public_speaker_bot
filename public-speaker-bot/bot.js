@@ -62,11 +62,16 @@ class MyBot extends ActivityHandler {
                 await this.sendSuggestedActions(context);
                 await next();
             }
+            else if (text == '위치 및 재고') {
+                await context.sendActivity('도서의 위치와 재고를 알고 싶으시면 예제와 같이 입력하세요');
+                await context.sendActivity('예제 : 강남점에서 말센스 찾아줘/광화문점에 말센스 위치가 어디야?');
+                await next();
+            }
             else if (text == '종료') {
                 await context.sendActivity(`감사합니다~^^`);
             }
             else {
-                try {
+                //try {
                     var replyText;
                     var infoObj;
                     var conversationReferences = {};
@@ -77,48 +82,47 @@ class MyBot extends ActivityHandler {
                     const currentUser = context.activity.from.id;
                     conversationReferences[currentUser] = TurnContext.getConversationReference(context.activity);
                     adapter = context.adapter;
-                    predict.getPrediction(text).then(res => {
-                        var predictObj = res;
-                        var score = predictObj.score;
-                        var bookName = predictObj.bookName;
-                        var branch = predictObj.branch;
-                        information.getBookLocation(bookName, branch);
-                        setTimeout(function () {
-                            infoObj = information.bookInformation;
-                            replyText = infoObj.stock + `\n\n위치 : ` + infoObj.location;
+                predict.getPrediction(text).then(res => {
+                    var predictObj = res;
+                    var score = predictObj.score;
+                    var bookName = predictObj.bookName;
+                    var branch = predictObj.branch;
+                    information.getBookLocation(bookName, branch);
+                    setTimeout(function () {
+                        infoObj = information.bookInformation;
+                        replyText = infoObj.stock + `\n\n위치 : ` + infoObj.location;
 
-                            reply.attachments = [infoObj.locationImg];
+                        reply.attachments = [infoObj.locationImg];
 
-                            setTimeout(async () => {
-                                await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
-                                    if (!infoObj.location)
-                                        await turnContext.sendActivity("지점이 존재하지 않습니다.");
+                        setTimeout(async () => {
+                            await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
+                                if (!infoObj.location)
+                                    await turnContext.sendActivity("정확한 지점명과 책이름을 입력해주세요");
+                                else {
+                                    if (infoObj.stock == '재고 : 없음')
+                                        await turnContext.sendActivity(replyText);
 
                                     else {
-                                        if (infoObj.stock == '재고 : 없음')
-                                            await turnContext.sendActivity(replyText);
-
-                                        else {
-                                            await turnContext.sendActivity(replyText);
-                                            await turnContext.sendActivity(reply);
-
-                                        }
-
+                                        await turnContext.sendActivity(replyText);
+                                        await turnContext.sendActivity(reply);
                                     }
-                                    await next();
-                                });
-                            }, 500);
+                                }
+                                var reply2 = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작', '교보문고 지점목록', '위치 및 재고', '종료'], '무엇을 보고싶나요?');
+                                await turnContext.sendActivity(reply2);
+                                await next();
+                            });
+                        }, 500);
 
-                        }, 1600);
+                    }, 1600);
 
-                    });
+                });
 
-                }
-                catch (err) {
-                    error = "잘못된 문장입니다. 다시입력해주세요";
-                    await context.sendActivity(error);
-                    await next();
-                }
+                //}
+                //catch (err) {
+                //    error = "잘못된 문장입니다. 다시입력해주세요";
+                //    await context.sendActivity(error);
+                //    await next();
+                //}
             }
         });
         this.onConversationUpdate(async (context, next) => {
@@ -131,7 +135,7 @@ class MyBot extends ActivityHandler {
     }
 
     async sendSuggestedActions(turnContext) {
-        var reply = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작', '교보문고 지점목록', '종료'], '무엇을 보고싶나요?');
+        var reply = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작', '교보문고 지점목록','위치 및 재고', '종료'], '무엇을 보고싶나요?');
         await turnContext.sendActivity(reply);
     }
 }
