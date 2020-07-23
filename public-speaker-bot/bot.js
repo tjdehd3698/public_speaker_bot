@@ -76,7 +76,7 @@ class MyBot extends ActivityHandler {
                 await context.sendActivity(`감사합니다~^^`);
             }
             else {
-                //try {
+                try {
                     var replyText;
                     var infoObj;
                     var conversationReferences = {};
@@ -87,47 +87,46 @@ class MyBot extends ActivityHandler {
                     const currentUser = context.activity.from.id;
                     conversationReferences[currentUser] = TurnContext.getConversationReference(context.activity);
                     adapter = context.adapter;
-                predict.getPrediction(text).then(res => {
-                    var predictObj = res;
-                    var score = predictObj.score;
-                    var bookName = predictObj.bookName;
-                    var branch = predictObj.branch;
-                    information.getBookLocation(bookName, branch);
-                    setTimeout(function () {
-                        infoObj = information.bookInformation;
-                        replyText = infoObj.stock + `\n\n위치 : ` + infoObj.location;
+                    predict.getPrediction(text).then(res => {
+                        var predictObj = res;
+                        var score = predictObj.score;
+                        var bookName = predictObj.bookName;
+                        var branch = predictObj.branch;
+                        information.getBookLocation(bookName, branch);
+                        setTimeout(function () {
+                            console.log(score);
+                            infoObj = information.bookInformation;
+                            replyText = infoObj.stock + `\n\n위치 : ` + infoObj.location;
 
-                        reply.attachments = [infoObj.locationImg];
+                            reply.attachments = [infoObj.locationImg];
 
-                        setTimeout(async () => {
-                            await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
-                                if (!infoObj.location)
-                                    await turnContext.sendActivity("정확한 지점명과 책이름을 입력해주세요");
-                                else {
-                                    if (infoObj.stock == '재고 : 없음')
-                                        await turnContext.sendActivity(replyText);
-
+                            setTimeout(async () => {
+                                await adapter.continueConversation(conversationReferences[currentUser], async turnContext => {
+                                    if (!infoObj.location)
+                                        await turnContext.sendActivity("정확한 지점명과 책이름을 입력해주세요");
                                     else {
-                                        await turnContext.sendActivity(replyText);
-                                        await turnContext.sendActivity(reply);
+                                        if (infoObj.stock == '재고 : 없음')
+                                            await turnContext.sendActivity(replyText);
+
+                                        else {
+                                            await turnContext.sendActivity(replyText);
+                                            await turnContext.sendActivity(reply);
+                                        }
                                     }
-                                }
-                                var reply2 = MessageFactory.suggestedActions(['뒤로가기']);
-                                await turnContext.sendActivity(reply2);
-                                await next();
-                            });
-                        }, 500);
+                                    var reply2 = MessageFactory.suggestedActions(['뒤로가기']);
+                                    await turnContext.sendActivity(reply2);
+                                    await next();
+                                });
+                            }, 500);
 
-                    }, 1600);
-
-                });
-
-                //}
-                //catch (err) {
-                //    error = "잘못된 문장입니다. 다시입력해주세요";
-                //    await context.sendActivity(error);
-                //    await next();
-                //}
+                        }, 1600);
+                    });
+                }
+                catch (err) {
+                    error = "잘못된 문장입니다. 다시입력해주세요";
+                    await context.sendActivity(error);
+                    await next();
+                }
             }
         });
         this.onConversationUpdate(async (context, next) => {

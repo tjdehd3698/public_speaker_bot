@@ -25,15 +25,25 @@ module.exports.getPrediction = async (str) => {
     // Send the REST call.
     const response = JSON.parse(await requestPromise(URI));
     
-    const score = response.prediction.intents.위치.score;
-    const userBookName = response.prediction.entities.책[1].이름[0];
-    const userBranch = response.prediction.entities.책[0].지점[0];
+    const score = response.prediction.intents.위치.score; 
+    console.log(score);
+    if (score >= 0.9) {
+        const userBookName = response.prediction.entities.책[1].이름[0];
+        const userBranch = response.prediction.entities.책[0].지점[0];
 
-    var predictObj = {
-        'score' : score,
-        'bookName' : userBookName,
-        'branch' : userBranch
-    };
+        var predictObj = {
+            'score': score,
+            'bookName': userBookName,
+            'branch': userBranch
+        };
+    }
+    else {
+        var predictObj = {
+            'score': score,
+            'bookName':'오류',
+            'branch': '오류'
+        };
+    }
 
     return predictObj;
 }
