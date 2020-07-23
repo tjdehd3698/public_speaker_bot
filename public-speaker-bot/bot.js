@@ -67,6 +67,11 @@ class MyBot extends ActivityHandler {
                 await context.sendActivity('예제 : 강남점에서 말센스 찾아줘/광화문점에 말센스 위치가 어디야?');
                 await next();
             }
+            else if (text == '뒤로가기') {
+                await this.sendSuggestedActions(context);
+                await next();
+            }
+
             else if (text == '종료') {
                 await context.sendActivity(`감사합니다~^^`);
             }
@@ -107,7 +112,7 @@ class MyBot extends ActivityHandler {
                                         await turnContext.sendActivity(reply);
                                     }
                                 }
-                                var reply2 = MessageFactory.suggestedActions(['베스트셀러', '화제의 신작', '교보문고 지점목록', '위치 및 재고', '종료'], '무엇을 보고싶나요?');
+                                var reply2 = MessageFactory.suggestedActions(['뒤로가기']);
                                 await turnContext.sendActivity(reply2);
                                 await next();
                             });
