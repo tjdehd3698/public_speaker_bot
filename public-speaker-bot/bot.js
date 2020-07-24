@@ -1,14 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { ActivityHandler, MessageFactory, TurnContext } = require('botbuilder');
-const { ActionTypes, ActivityTypes, CardFactory } = require('botbuilder');
-//const { ActivityHandler, ActionTypes, ActivityTypes, CardFactory, MessageFactory } = require('botbuilder');
+const { ActivityHandler, MessageFactory, TurnContext, ActivityTypes } = require('botbuilder');
 const book = require('./getBook')
 const branch = require('./getBranchCode')
 const predict = require('./predict')
 const information = require('./getBookInformation')
-//const cron = require('node-cron');
 
 class MyBot extends ActivityHandler {
     constructor() {
@@ -133,7 +130,6 @@ class MyBot extends ActivityHandler {
             await context.sendActivity('어서오세요');
             await context.sendActivity('목적을 알고 싶으면 "목적 알려주세요"를 입력해주세요');
             await this.sendSuggestedActions(context);
-            // By calling next() you ensure that the next BotHandler is run.
             await next();
         });
     }

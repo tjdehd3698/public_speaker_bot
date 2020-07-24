@@ -3,8 +3,8 @@ const cheerio = require("cheerio");
 const iconv = require("iconv-lite");
 
 module.exports.getBookLocation = async (name, branch) => {
-    var userBookName = name;    //책제목 하드코딩 -> 나중에 수정
-    var userBranch = branch;  //사용자가 원하는 지점이름 하드코딩 -> 나중에 수정
+    var userBookName = name;   
+    var userBranch = branch;  
 
     var getBarcodeUrl = 'https://search.kyobobook.co.kr/web/search?vPstrKeyWord=' + encodeURI(userBookName) + '&orderClick=LET';
     var getBranchCodeUrl = 'http://www.kyobobook.co.kr/storen/info/StorePosition.jsp';
@@ -21,7 +21,6 @@ module.exports.getBookLocation = async (name, branch) => {
         }
     }
     function getInternetAttachment(url) {
-        // NOTE: The contentUrl must be HTTPS.
         return {
             name: 'architecture-resize.png',
             contentType: 'image/png',
