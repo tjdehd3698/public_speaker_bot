@@ -120,3 +120,9 @@ new 신작 연애 모의고사 (2권 구성, OMR카드 포함)
             위치 : [G28-1]세계문학베스트
             
 -![위치 사진](http://image.kyobobook.co.kr/newimages/apps/b2c/kiosk/new/map/15_print_Smap_G.gif)
+
+## 참고
+-[설명 영상]https://www.youtube.com/watch?v=2nizlN-NOHk&feature=youtu.be
+
+-[시연 영상]https://www.youtube.com/watch?v=3v62mY2UBGU&feature=youtu.be
+
